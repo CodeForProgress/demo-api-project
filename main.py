@@ -131,8 +131,12 @@ print "\n\nThanks for sharing your information! \nHere's some info about the cur
 weather = urllib2.urlopen('http://api.wunderground.com/api/d13977cb92663c84/alerts/conditions/forecast/forecast10day/q/' + state + "/" + city.replace(" ", "_") + '.json')
 json_string = weather.read()
 weatherFile = json.loads(json_string)
-print weatherFile["alerts"][0]["description"]
-print weatherFile["alerts"][0]["message"]
+try: 
+    print weatherFile["alerts"][0]["description"]
+    print weatherFile["alerts"][0]["message"]
+except IndexError:
+    print "There are no weather alerts for %s." %(address.title())
+
 print "The current temperature in %s is %s." %(city.title(), weatherFile["current_observation"]["temperature_string"])
 
 dailyForecast = weatherFile["forecast"]["simpleforecast"]["forecastday"]
