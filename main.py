@@ -2,8 +2,8 @@ import tweepy
 import lob
 import googlemaps
 import sunlight
-import pprint
-import breezo 
+from modules.BreezeClient import Client
+import breezo
 
 # imports for Weather API
 import urllib2
@@ -126,33 +126,20 @@ longitude = geocode_result[0]["geometry"]["location"]["lng"]
 
 congressList = sunlight.congress.locate_legislators_by_lat_lon(latitude, longitude)
 
-print "\n\nThanks for sharing your information! \nHere's some info about the current environment near " + address.title() + ".\n"
+print "\n\nThanks for sharing your information! \nHere's some info about the current environment near " + address + ".\n"
 
 
-weather = urllib2.urlopen('http://api.wunderground.com/api/d13977cb92663c84/alerts/conditions/forecast/forecast10day/q/' + state + "/" + city.replace(" ", "_") + '.json')
-json_string = weather.read()
-weatherFile = json.loads(json_string)
-try: 
-    print weatherFile["alerts"][0]["description"]
-    print weatherFile["alerts"][0]["message"]
-except IndexError:
-    print "There are no weather alerts for %s." %(address.title())
-
-print "The current temperature in %s is %s." %(city.title(), weatherFile["current_observation"]["temperature_string"])
-
-dailyForecast = weatherFile["forecast"]["simpleforecast"]["forecastday"]
-
-print "\nTen Day Forecast: "
-
-for x in dailyForecast:
-    print x["date"]["weekday"] + ", " + x["date"]["monthname"] + " " + str(x["date"]["day"])
-    print "The high is: " + x["high"]["fahrenheit"]
-    print "The low is: " + x["low"]["fahrenheit"] + "\n"
-
-weather.close()
-
+f = urllib2.urlopen('http://api.wunderground.com/api/d13977cb92663c84/geolookup/conditions/q/' + state + "/" + city.replace(" ", "_") + '.json')
+json_string = f.read()
+parsed_json = json.loads(json_string)
+location = parsed_json['location']['city']
+temp_f = parsed_json['current_observation']['temp_f']
+print "It's currently %s degrees in %s." %(temp_f, location)
+f.close()
 
 print "\n"
+
+print "Here's a description of the air quality in your area:%s \n"% (air_quality)
 print "Here's a list of Congress members who represent your area: \n"
 
 for rep in congressList:

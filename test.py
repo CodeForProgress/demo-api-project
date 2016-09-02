@@ -1,17 +1,13 @@
 import urllib2
 import json
-import pprint
 
-govTrack = "300001"
+city = "Washington"
+state = "DC"
 
-f = urllib2.urlopen('https://www.govtrack.us/api/v2/vote_voter?person=' + govTrack)
+f = urllib2.urlopen('http://api.wunderground.com/api/d13977cb92663c84/geolookup/conditions/q/' + state + "/" + city.replace(" ", "_") + '.json')
 json_string = f.read()
 parsed_json = json.loads(json_string)
-govtrackObject = parsed_json
+location = parsed_json['location']['city']
+temp_f = parsed_json['current_observation']['temp_f']
+print "Current temperature in %s is: %s" % (location, temp_f)
 f.close()
-
-# pprint.pprint(govtrackObject['objects'][1]['option']['value'])
-
-for bill in govtrackObject['objects']:
-	print bill['option']['value']
-	
